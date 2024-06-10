@@ -1,0 +1,22 @@
+PODS:
+  - esc_bluetooth_serial (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - esc_bluetooth_serial (from `.symlinks/plugins/esc_bluetooth_serial/ios`)
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+  esc_bluetooth_serial:
+    :path: ".symlinks/plugins/esc_bluetooth_serial/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  esc_bluetooth_serial: 0b5d9bb16817cd466c21edf9e817b39e0d014267
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+
+PODFILE CHECKSUM: 8e679eca47255a8ca8067c4c67aab20e64cb974d
+
+COCOAPODS: 1.11.0.rc.1
