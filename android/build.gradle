@@ -1,20 +1,20 @@
-
+group 'com.ertadis.esc_bluetooth_serial'
 version '1.0'
 
 buildscript {
-    //ext.kotlin_version = "1.8.10"
+    ext.kotlin_version = '1.7.10'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.2")
-        //classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        classpath 'com.android.tools.build:gradle:8.1.4'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
-rootProject.allprojects {
+allprojects {
     repositories {
         google()
         mavenCentral()
@@ -22,23 +22,37 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
-//apply plugin: "kotlin-android"
+apply plugin: 'kotlin-android'
 
 android {
-    namespace 'com.ertadis.esc_bluetooth_serial'
+    if (project.android.hasProperty("namespace")) {
+        namespace 'com.ertadis.esc_bluetooth_serial'
+    }
 
-    compileSdkVersion 33
+
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    defaultConfig {
-        minSdkVersion 21
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
-}
 
-dependencies {
-    implementation files('libs/gprintersdkv2.jar')
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+
+    defaultConfig {
+        minSdkVersion 19
+    }
+
+    dependencies {
+        testImplementation 'org.jetbrains.kotlin:kotlin-test'
+        testImplementation 'org.mockito:mockito-core:5.2.0'
+        implementation files('libs/gprintersdkv2.jar')
+    }
 }

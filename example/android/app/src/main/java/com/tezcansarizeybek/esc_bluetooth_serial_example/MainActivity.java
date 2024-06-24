@@ -1,4 +1,4 @@
-package com.tezcansarizeybek.esc_bluetooth_serial_example;
+package com.ertadis.esc_bluetooth_serial_example;
 
 import io.flutter.embedding.android.FlutterActivity;
 
