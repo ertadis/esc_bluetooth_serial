@@ -1,4 +1,4 @@
-group 'com.tezcansarizeybek.esc_bluetooth_serial'
+
 version '1.0'
 
 buildscript {
@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        //classpath("com.android.tools.build:gradle:8.8.0")
+        classpath("com.android.tools.build:gradle:8.1.2")
         //classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     }
 }
@@ -22,9 +22,11 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: "kotlin-android"
+//apply plugin: "kotlin-android"
 
 android {
+    namespace 'com.ertadis.esc_bluetooth_serial'
+
     compileSdkVersion 33
 
     compileOptions {
