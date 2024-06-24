@@ -56,3 +56,7 @@ android {
         implementation files('libs/gprintersdkv2.jar')
     }
 }
+
+dependencies {
+    implementation 'androidx.annotation:annotation-jvm:1.8.0'
+}

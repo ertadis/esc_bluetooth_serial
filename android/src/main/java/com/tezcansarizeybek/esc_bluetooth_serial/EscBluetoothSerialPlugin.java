@@ -1,4 +1,4 @@
-package com.ertadis.esc_bluetooth_serial;
+package com.tezcansarizeybek.esc_bluetooth_serial;
 
 import androidx.annotation.NonNull;
 
