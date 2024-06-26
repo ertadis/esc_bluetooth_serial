@@ -41,7 +41,6 @@ public class EscBluetoothSerialPlugin implements FlutterPlugin, MethodCallHandle
   private Result pendingResult;
 
 
-  @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     if (mBluetoothAdapter == null && !"isAvailable".equals(call.method)) {
       result.error("bluetooth_unavailable", "Bluetooth is unavailable", null);
@@ -250,7 +249,6 @@ public class EscBluetoothSerialPlugin implements FlutterPlugin, MethodCallHandle
     }
   }
 
-  @Override
   public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
     if (requestCode == REQUEST_COARSE_LOCATION_PERMISSIONS) {
@@ -269,7 +267,7 @@ public class EscBluetoothSerialPlugin implements FlutterPlugin, MethodCallHandle
 
   private BluetoothAdapter mBluetoothAdapter;
 
-  @Override
+
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "esc_bluetooth_serial");
     BluetoothManager mBluetoothManager = (BluetoothManager) flutterPluginBinding.getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE);
@@ -277,7 +275,7 @@ public class EscBluetoothSerialPlugin implements FlutterPlugin, MethodCallHandle
     channel.setMethodCallHandler(this);
   }
 
-  @Override
+
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
 
   }

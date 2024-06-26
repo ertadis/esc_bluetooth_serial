@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -270,7 +271,7 @@ public class DeviceConnFactoryManager {
         return deviceConnFactoryManagers[id].currentPrinterCommand;
     }
 
-    public static final class Build {
+    public final class Build {
         private String ip;
         private String macAddress;
         private UsbDevice usbDevice;
@@ -379,7 +380,7 @@ public class DeviceConnFactoryManager {
         ThreadPool.getInstantiation().addSerialTask(() -> {
             final ThreadFactoryBuilder threadFactoryBuilder = new ThreadFactoryBuilder("Timer");
             final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1, threadFactoryBuilder);
-            scheduledExecutorService.scheduleAtFixedRate(threadFactoryBuilder.newThread(() -> {
+            scheduledExecutorService.scheduleWithFixedDelay(threadFactoryBuilder.newThread(() -> {
                 if (currentPrinterCommand == null && queryPrinterCommandFlag > TSC) {
                     if (reader != null) {
                         reader.cancel();
@@ -457,99 +458,98 @@ public class DeviceConnFactoryManager {
         }
     }
 
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Constant.abnormal_Disconnection:
-                    Log.d(TAG, "abnormal disconnection");
-                    sendStateBroadcast(Constant.abnormal_Disconnection);
-                    break;
-                case READ_DATA:
-                    int cnt = msg.getData().getInt(READ_DATA_CNT);
-                    byte[] buffer = msg.getData().getByteArray(READ_BUFFER_ARRAY);
-                    if (buffer == null) {
-                        return;
+    private final Handler mHandler = new Handler(Looper.getMainLooper(), msg -> {
+        switch (msg.what) {
+            case Constant.abnormal_Disconnection:
+                Log.d(TAG, "abnormal disconnection");
+                sendStateBroadcast(Constant.abnormal_Disconnection);
+                break;
+            case READ_DATA:
+                int cnt = msg.getData().getInt(READ_DATA_CNT);
+                byte[] buffer = msg.getData().getByteArray(READ_BUFFER_ARRAY);
+                if (buffer == null) {
+                    return;
+                }
+                int result = judgeResponseType(buffer[0]);
+                String status = "";
+                if (sendCommand == esc) {
+                    if (currentPrinterCommand == null) {
+                        currentPrinterCommand = PrinterCommand.ESC;
+                        sendStateBroadcast(CONN_STATE_CONNECTED);
+                    } else {
+                        if (result == 0) {
+                            Intent intent = new Intent(ACTION_QUERY_PRINTER_STATE);
+                            intent.putExtra(DEVICE_ID, id);
+                            if(mContext!=null){
+                                mContext.sendBroadcast(intent);
+                            }
+                        } else if (result == 1) {
+                            if ((buffer[0] & ESC_STATE_PAPER_ERR) > 0) {
+                                status += " Printer out of paper";
+                            }
+                            if ((buffer[0] & ESC_STATE_COVER_OPEN) > 0) {
+                                status += " Printer open cover";
+                            }
+                            if ((buffer[0] & ESC_STATE_ERR_OCCURS) > 0) {
+                                status += " Printer error";
+                            }
+                            Log.d(TAG, status);
+                        }
                     }
-                    int result = judgeResponseType(buffer[0]);
-                    String status = "";
-                    if (sendCommand == esc) {
-                        if (currentPrinterCommand == null) {
-                            currentPrinterCommand = PrinterCommand.ESC;
-                            sendStateBroadcast(CONN_STATE_CONNECTED);
+                }else if (sendCommand == tsc) {
+                    if (currentPrinterCommand == null) {
+                        currentPrinterCommand = PrinterCommand.TSC;
+                        sendStateBroadcast(CONN_STATE_CONNECTED);
+                    } else {
+                        if (cnt == 1) {
+                            if ((buffer[0] & TSC_STATE_PAPER_ERR) > 0) {
+                                status += " Printer out of paper";
+                            }
+                            if ((buffer[0] & TSC_STATE_COVER_OPEN) > 0) {
+                                status += " Printer open cover";
+                            }
+                            if ((buffer[0] & TSC_STATE_ERR_OCCURS) > 0) {
+                                status += " Printer error";
+                            }
+                            Log.d(TAG, status);
                         } else {
-                            if (result == 0) {
-                                Intent intent = new Intent(ACTION_QUERY_PRINTER_STATE);
-                                intent.putExtra(DEVICE_ID, id);
-                                if(mContext!=null){
-                                    mContext.sendBroadcast(intent);
-                                }
-                            } else if (result == 1) {
-                                if ((buffer[0] & ESC_STATE_PAPER_ERR) > 0) {
-                                    status += " Printer out of paper";
-                                }
-                                if ((buffer[0] & ESC_STATE_COVER_OPEN) > 0) {
-                                    status += " Printer open cover";
-                                }
-                                if ((buffer[0] & ESC_STATE_ERR_OCCURS) > 0) {
-                                    status += " Printer error";
-                                }
-                                Log.d(TAG, status);
+                            Intent intent = new Intent(ACTION_QUERY_PRINTER_STATE);
+                            intent.putExtra(DEVICE_ID, id);
+                            if(mContext!=null){
+                                mContext.sendBroadcast(intent);
                             }
                         }
-                    }else if (sendCommand == tsc) {
-                        if (currentPrinterCommand == null) {
-                            currentPrinterCommand = PrinterCommand.TSC;
-                            sendStateBroadcast(CONN_STATE_CONNECTED);
-                        } else {
-                            if (cnt == 1) {
-                                if ((buffer[0] & TSC_STATE_PAPER_ERR) > 0) {
-                                    status += " Printer out of paper";
-                                }
-                                if ((buffer[0] & TSC_STATE_COVER_OPEN) > 0) {
-                                    status += " Printer open cover";
-                                }
-                                if ((buffer[0] & TSC_STATE_ERR_OCCURS) > 0) {
-                                    status += " Printer error";
-                                }
-                                Log.d(TAG, status);
-                            } else {
-                                Intent intent = new Intent(ACTION_QUERY_PRINTER_STATE);
-                                intent.putExtra(DEVICE_ID, id);
-                                if(mContext!=null){
-                                    mContext.sendBroadcast(intent);
-                                }
-                            }
-                        }
-                    }else if(sendCommand==cpcl){
-                        if (currentPrinterCommand == null) {
-                            currentPrinterCommand = PrinterCommand.CPCL;
-                            sendStateBroadcast(CONN_STATE_CONNECTED);
-                        }else {
-                            if (cnt == 1) {
+                    }
+                }else if(sendCommand==cpcl){
+                    if (currentPrinterCommand == null) {
+                        currentPrinterCommand = PrinterCommand.CPCL;
+                        sendStateBroadcast(CONN_STATE_CONNECTED);
+                    }else {
+                        if (cnt == 1) {
 
-                                if ((buffer[0] ==CPCL_STATE_PAPER_ERR)) {
-                                    status += " Printer out of paper";
-                                }
-                                if ((buffer[0] ==CPCL_STATE_COVER_OPEN)) {
-                                    status += " Printer open cover";
-                                }
-                                Log.d(TAG, status);
-                            } else {
-                                Intent intent = new Intent(ACTION_QUERY_PRINTER_STATE);
-                                intent.putExtra(DEVICE_ID, id);
-                                if(mContext!=null){
-                                    mContext.sendBroadcast(intent);
-                                }
+                            if ((buffer[0] ==CPCL_STATE_PAPER_ERR)) {
+                                status += " Printer out of paper";
+                            }
+                            if ((buffer[0] ==CPCL_STATE_COVER_OPEN)) {
+                                status += " Printer open cover";
+                            }
+                            Log.d(TAG, status);
+                        } else {
+                            Intent intent = new Intent(ACTION_QUERY_PRINTER_STATE);
+                            intent.putExtra(DEVICE_ID, id);
+                            if(mContext!=null){
+                                mContext.sendBroadcast(intent);
                             }
                         }
                     }
-                    break;
-                default:
-                    break;
-            }
+                }
+                break;
+            default:
+                break;
         }
-    };
+        return false;
+    });
+};
 
     private void sendStateBroadcast(int state) {
         Intent intent = new Intent(ACTION_CONN_STATE);
