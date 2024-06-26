@@ -30,6 +30,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.RequestPermissionsResultListener;
 
+
 public class EscBluetoothSerialPlugin implements FlutterPlugin, MethodCallHandler, RequestPermissionsResultListener {
   private MethodChannel channel;
   private final Activity activity = new Activity();
