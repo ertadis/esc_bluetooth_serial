@@ -549,7 +549,7 @@ public class DeviceConnFactoryManager {
         }
         return false;
     });
-};
+
 
     private void sendStateBroadcast(int state) {
         Intent intent = new Intent(ACTION_CONN_STATE);
