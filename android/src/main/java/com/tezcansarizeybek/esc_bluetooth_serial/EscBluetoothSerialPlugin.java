@@ -70,7 +70,7 @@ public class EscBluetoothSerialPlugin implements FlutterPlugin, MethodCallHandle
         println(Log.DEBUG,"activity","$activity");
 
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (ContextCompat.checkSelfPermission(Context, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
           ActivityCompat.requestPermissions(
                   activity,
