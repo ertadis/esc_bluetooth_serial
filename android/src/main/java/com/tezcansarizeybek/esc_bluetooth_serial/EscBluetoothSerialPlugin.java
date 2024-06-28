@@ -68,12 +68,12 @@ public class EscBluetoothSerialPlugin implements FlutterPlugin, MethodCallHandle
       case "startScan": {
         //int a = ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) ;
         //if (a != PackageManager.PERMISSION_GRANTED) {
-          ActivityCompat.requestPermissions(
-                  activity,
-                  new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
-                  REQUEST_COARSE_LOCATION_PERMISSIONS);
-          pendingResult = result;
-          break;
+        ActivityCompat.requestPermissions(
+                activity,
+                new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
+                REQUEST_COARSE_LOCATION_PERMISSIONS);
+        pendingResult = result;
+          //break;
         //}
         startScan(result);
         break;
