@@ -65,19 +65,24 @@ public class EscBluetoothSerialPlugin implements FlutterPlugin, MethodCallHandle
       case "isConnected":
         result.success(threadPool != null);
         break;
-      case "startScan": try{
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-          ActivityCompat.requestPermissions(
-                  activity,
-                  new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                  REQUEST_COARSE_LOCATION_PERMISSIONS);
-          pendingResult = result;
-          break;
+      case "startScan":
+        try{
+          startScan(result);
+        }catch (Exception e){
+          Log.println(Log.DEBUG,"error",e.getMessage());
         }
-      }catch (Exception e){
-        Log.println(Log.DEBUG,"error",e.getMessage());
-      }
-        startScan(result);
+        try{
+          if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    activity,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    REQUEST_COARSE_LOCATION_PERMISSIONS);
+            pendingResult = result;
+            break;
+          }
+        }catch (Exception e){
+          Log.println(Log.DEBUG,"error",e.getMessage());
+        }
         break;
       case "getBondedDevices":
         getDevices(result);
