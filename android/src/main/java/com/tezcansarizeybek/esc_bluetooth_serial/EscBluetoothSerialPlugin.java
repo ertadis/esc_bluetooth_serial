@@ -1,5 +1,7 @@
 package com.tezcansarizeybek.esc_bluetooth_serial;
 
+import static android.util.Log.println;
+
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -64,11 +66,15 @@ public class EscBluetoothSerialPlugin implements FlutterPlugin, MethodCallHandle
         result.success(threadPool != null);
         break;
       case "startScan": {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+        println(Log.DEBUG,"activity","$activity");
+        println(Log.DEBUG,"activity","$activity");
+
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
           ActivityCompat.requestPermissions(
-                  context as Activity, // Cast context to Activity
-                  arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                  activity,
+                  new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
                   REQUEST_COARSE_LOCATION_PERMISSIONS);
           pendingResult = result;
           break;
