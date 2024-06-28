@@ -271,7 +271,7 @@ public class DeviceConnFactoryManager {
         return deviceConnFactoryManagers[id].currentPrinterCommand;
     }
 
-    public final class Build {
+    public static final class Build {
         private String ip;
         private String macAddress;
         private UsbDevice usbDevice;
